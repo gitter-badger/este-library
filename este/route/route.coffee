@@ -9,20 +9,35 @@ goog.require 'goog.asserts'
 class este.Route
 
   ###*
-    @param {string} path Express-style path string such as /user/:name
+    @param {string} path Express-style path string like /user/:name
+    @param {string=} title
     @constructor
     @final
   ###
-  constructor: (@path) ->
+  constructor: (@path, @title = '') ->
     @keys = []
     @createRegExp_()
 
   ###*
+    Express-style path string like /user/:name
     @type {string}
   ###
   path: ''
 
   ###*
+    String used as document title.
+    @type {string}
+  ###
+  title: ''
+
+  ###*
+    Parsed params from URL. Can be set via este.Router or Express app.
+    @type {Object}
+  ###
+  params: null
+
+  ###*
+    Router is set when route is added to este.Router.
     @type {este.Router}
   ###
   router: null
