@@ -104,7 +104,7 @@ class este.Route
     @ensureUrlHasNoTrailingSlashOrDot_ url
 
   ###*
-    @param {(Object|Array)} params
+    @param {(Object|Array)=} params
   ###
   redirect: (params) ->
     goog.asserts.assert !!@router, 'Can\'t redirect. Route was not added to router.'
