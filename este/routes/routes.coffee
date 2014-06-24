@@ -20,12 +20,14 @@ class este.Routes extends goog.events.EventTarget
 
     # Example of app.Routes constructor:
     #
-    # @home = new este.Route '/', 'Home'
-    # @listOfProducts = new este.Route '/products', 'Products'
+    # @home = new este.Route '/'
+    # @products = new este.Route '/products'
+    # @productDetail = new este.Route '/product/:id'
     #
     # @list = [
     #   @home
-    #   @listOfProducts
+    #   @products
+    #   @productDetail
     # ]
 
   ###*
@@ -36,9 +38,8 @@ class este.Routes extends goog.events.EventTarget
 
   ###*
     @type {este.Route}
-    @private
   ###
-  active_: null
+  active: null
 
   ###*
     @type {Array.<este.Route>}
@@ -51,21 +52,15 @@ class este.Routes extends goog.events.EventTarget
     @param {Object} params
   ###
   setActive: (route, params) ->
-    @active_ = route
+    @active = route
     route.params = params
     @dispatchEvent Routes.EventType.CHANGE
-
-  ###*
-    @return {este.Route}
-  ###
-  getActive: ->
-    @active_
 
   ###*
     @param {este.Router} router
   ###
   addToEste: (router) ->
-    @addTo (route) =>
+    @addTo_ (route) =>
       router.add route, (params) =>
         @setActive route, params
         return
@@ -75,7 +70,7 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} onRequest
   ###
   addToExpress: (app, onRequest) ->
-    @addTo (route) =>
+    @addTo_ (route) =>
       expressRoute = app['route'] route.path
       expressRoute['get'] (req, res) =>
         @setActive route, req['params']
@@ -86,6 +81,6 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} addRoute
     @private
   ###
-  addTo: (addRoute) ->
+  addTo_: (addRoute) ->
     addRoute route for route in @list
     return
