@@ -67,7 +67,7 @@ class este.Routes extends goog.events.EventTarget
     @param {este.Router} router
   ###
   addToEste: (router) ->
-    @forEachRouteInList (route) =>
+    @forEachRouteInList_ (route) =>
       router.add route, (params) =>
         @setActive route, params
         return
@@ -77,7 +77,7 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} onRequest
   ###
   addToExpress: (app, onRequest) ->
-    @forEachRouteInList (route) =>
+    @forEachRouteInList_ (route) =>
       expressRoute = app['route'] route.path
       expressRoute['get'] (req, res) =>
         @setActive route, req['params']
@@ -88,6 +88,6 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} fn
     @private
   ###
-  forEachRouteInList: (fn) ->
+  forEachRouteInList_: (fn) ->
     fn route for route in @list
     return
