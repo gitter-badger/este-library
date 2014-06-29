@@ -1,12 +1,13 @@
 ###*
-  @fileoverview Use this class to define compile time safe routes and list
-  for este.Router and Express.js app.
+  @fileoverview Compile-time save app routes. Auto registration for
+  este.Router and Express.js app.
 ###
 
 goog.provide 'este.Routes'
 goog.provide 'este.Routes.EventType'
 
 goog.require 'este.Route'
+goog.require 'este.labs.storage.Base'
 goog.require 'goog.events.EventTarget'
 
 class este.Routes extends goog.events.EventTarget
@@ -18,10 +19,6 @@ class este.Routes extends goog.events.EventTarget
   constructor: ->
     super()
     @list = []
-    # Example:
-    # @home = @route '/'
-    # @products = @route '/products'
-    # @product = @route '/product/:id'
 
   ###*
     @enum {string}
@@ -35,6 +32,12 @@ class este.Routes extends goog.events.EventTarget
   active: null
 
   ###*
+    @type {este.labs.storage.Base}
+    @protected
+  ###
+  storage: new este.labs.storage.Base
+
+  ###*
     @type {Array.<este.Route>}
     @protected
   ###
@@ -46,8 +49,9 @@ class este.Routes extends goog.events.EventTarget
   addToEste: (router) ->
     @forEachRouteInList (route) =>
       router.add route, (params) =>
-        @setActive route, params
-        return
+        route.params = params
+        @storage.load(route, @).then =>
+          @setActive route
 
   ###*
     @param {Object} app Express.js app.
@@ -57,8 +61,10 @@ class este.Routes extends goog.events.EventTarget
     @forEachRouteInList (route) =>
       expressRoute = app['route'] route.path
       expressRoute['get'] (req, res) =>
-        @setActive route, req['params']
-        onRequest.apply @, arguments
+        route.params = req['params']
+        @storage.load(route, @).then =>
+          @setActive route
+          onRequest req, res
         return
 
   ###*
@@ -71,12 +77,10 @@ class este.Routes extends goog.events.EventTarget
 
   ###*
     @param {este.Route} route
-    @param {Object} params
     @protected
   ###
-  setActive: (route, params) ->
+  setActive: (route) ->
     @active = route
-    route.params = params
     @dispatchEvent Routes.EventType.CHANGE
 
   ###*
