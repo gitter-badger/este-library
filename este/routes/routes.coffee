@@ -17,18 +17,11 @@ class este.Routes extends goog.events.EventTarget
   ###
   constructor: ->
     super()
-
-    # Example of app.Routes constructor:
-    #
+    @list = []
+    # Example:
     # @home = @route '/'
     # @products = @route '/products'
-    # @productDetail = @route '/product/:id'
-    #
-    # @list = [
-    #   @home
-    #   @products
-    #   @productDetail
-    # ]
+    # @product = @route '/product/:id'
 
   ###*
     @enum {string}
@@ -48,26 +41,10 @@ class este.Routes extends goog.events.EventTarget
   list: null
 
   ###*
-    @param {string} path
-    @return {este.Route}
-  ###
-  route: (path) ->
-    new este.Route path
-
-  ###*
-    @param {este.Route} route
-    @param {Object} params
-  ###
-  setActive: (route, params) ->
-    @active = route
-    route.params = params
-    @dispatchEvent Routes.EventType.CHANGE
-
-  ###*
     @param {este.Router} router
   ###
   addToEste: (router) ->
-    @forEachRouteInList_ (route) =>
+    @forEachRouteInList (route) =>
       router.add route, (params) =>
         @setActive route, params
         return
@@ -77,7 +54,7 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} onRequest
   ###
   addToExpress: (app, onRequest) ->
-    @forEachRouteInList_ (route) =>
+    @forEachRouteInList (route) =>
       expressRoute = app['route'] route.path
       expressRoute['get'] (req, res) =>
         @setActive route, req['params']
@@ -86,8 +63,28 @@ class este.Routes extends goog.events.EventTarget
 
   ###*
     @param {Function} fn
-    @private
+    @protected
   ###
-  forEachRouteInList_: (fn) ->
+  forEachRouteInList: (fn) ->
     fn route for route in @list
     return
+
+  ###*
+    @param {este.Route} route
+    @param {Object} params
+    @protected
+  ###
+  setActive: (route, params) ->
+    @active = route
+    route.params = params
+    @dispatchEvent Routes.EventType.CHANGE
+
+  ###*
+    @param {string} path
+    @return {este.Route}
+    @protected
+  ###
+  route: (path) ->
+    route = new este.Route path
+    @list.push route
+    route
