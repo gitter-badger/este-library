@@ -20,9 +20,9 @@ class este.Routes extends goog.events.EventTarget
 
     # Example of app.Routes constructor:
     #
-    # @home = new este.Route '/'
-    # @products = new este.Route '/products'
-    # @productDetail = new este.Route '/product/:id'
+    # @home = @route '/'
+    # @products = @route '/products'
+    # @productDetail = @route '/product/:id'
     #
     # @list = [
     #   @home
@@ -48,6 +48,13 @@ class este.Routes extends goog.events.EventTarget
   list: null
 
   ###*
+    @param {string} path
+    @return {este.Route}
+  ###
+  route: (path) ->
+    new este.Route path
+
+  ###*
     @param {este.Route} route
     @param {Object} params
   ###
@@ -60,7 +67,7 @@ class este.Routes extends goog.events.EventTarget
     @param {este.Router} router
   ###
   addToEste: (router) ->
-    @addTo_ (route) =>
+    @forEachRouteInList (route) =>
       router.add route, (params) =>
         @setActive route, params
         return
@@ -70,7 +77,7 @@ class este.Routes extends goog.events.EventTarget
     @param {Function} onRequest
   ###
   addToExpress: (app, onRequest) ->
-    @addTo_ (route) =>
+    @forEachRouteInList (route) =>
       expressRoute = app['route'] route.path
       expressRoute['get'] (req, res) =>
         @setActive route, req['params']
@@ -78,9 +85,9 @@ class este.Routes extends goog.events.EventTarget
         return
 
   ###*
-    @param {Function} addRoute
+    @param {Function} fn
     @private
   ###
-  addTo_: (addRoute) ->
-    addRoute route for route in @list
+  forEachRouteInList: (fn) ->
+    fn route for route in @list
     return
