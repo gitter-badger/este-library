@@ -221,3 +221,45 @@ suite 'este.Router', ->
       history.setToken = (path) ->
         assert.equal path, '/foo'
         done()
+
+  suite 'pending route with the same path', ->
+    test 'should be ignored', (done) ->
+      called = 0
+      router.add '/', ->
+        called++
+        new goog.Promise (resolve) -> setTimeout resolve, 10
+
+      router.load '/'
+      router.load '/'
+
+      history.setToken = ->
+        assert.equal called, 1
+        done()
+
+    test 'should be ignored for changed pending route', (done) ->
+      called = 0
+      router.add '/', ->
+        called++
+        new goog.Promise (resolve) -> setTimeout resolve, 10
+      router.add '/home', -> goog.Promise.resolve()
+      router.load '/home'
+      router.load '/'
+      setTimeout ->
+        router.load '/'
+        history.setToken = ->
+          assert.equal called, 1
+          done()
+      , 1
+
+    test 'should not be ignored if load is resolved', (done) ->
+      called = 0
+      router.add '/', ->
+        called++
+        goog.Promise.resolve()
+      router.load '/'
+      setTimeout ->
+        router.load '/'
+      , 1
+      history.setToken = ->
+        assert.equal called, 2
+        done()

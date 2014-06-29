@@ -61,6 +61,12 @@ class este.Router extends goog.Disposable
   previousRoutePromise_: null
 
   ###*
+    @type {string}
+    @private
+  ###
+  pendingPath_: ''
+
+  ###*
     @param {(string|este.Route)} route
     @param {Function} callback
     @return {este.Router}
@@ -99,13 +105,22 @@ class este.Router extends goog.Disposable
     @param {string} path
   ###
   load: (path) ->
+    if @pendingPath_ && @pendingPath_ == path
+      return
+    @pendingPath_ = path
+
     matchedRoute = @findMatchedRoute path
     goog.asserts.assert !!matchedRoute, "Route for path '#{path}' not found."
-    @previousRoutePromise_.cancel() if @previousRoutePromise_
+
+    if @previousRoutePromise_
+      @previousRoutePromise_.cancel()
     routePromise = @getMatchedRoutePromise matchedRoute, path
     @previousRoutePromise_ = routePromise
     routePromise
       .then => @updateUrl_ path
+      .thenAlways =>
+        if path == @pendingPath_
+          @pendingPath_ = ''
 
   ###*
     @param {(string|este.Route)} route
