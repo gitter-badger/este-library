@@ -67,12 +67,6 @@ suite 'este.Route', ->
     test 'should set path', ->
       route = new Route 'foo'
       assert.equal route.path, 'foo'
-      assert.equal route.title, ''
-
-    test 'should set path with title', ->
-      route = new Route 'foo', 'title'
-      assert.equal route.path, 'foo'
-      assert.equal route.title, 'title'
 
   suite 'match', ->
     test 'should match some urls', ->
