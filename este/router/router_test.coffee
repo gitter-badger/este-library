@@ -1,4 +1,5 @@
 goog.require 'goog.events.EventTarget'
+goog.require 'goog.Promise'
 
 suite 'este.Router', ->
 
@@ -126,10 +127,13 @@ suite 'este.Router', ->
       router.start()
 
     suite 'invoked by browser navigation aka back/forward buttons', ->
-      test 'should load route', ->
+      test 'should load route', (done) ->
         dispatchNavigateEvent isNavigation: true
-        assert.isTrue routeCalled
-        assert.equal tokenStored, 'user/1'
+        setTimeout ->
+          assert.isTrue routeCalled
+          assert.equal tokenStored, 'user/1'
+          done()
+        , 0
 
     suite 'invoked by manual url update aka click on link or similar action', ->
       test 'should be ignored', ->
@@ -156,10 +160,13 @@ suite 'este.Router', ->
       router.start()
 
     suite 'invoked by browser navigation aka back/forward buttons', ->
-      test 'should load route', ->
+      test 'should load route', (done) ->
         dispatchNavigateEvent isNavigation: true
-        assert.isTrue routeCalled
-        assert.equal tokenStored, '/user/1'
+        setTimeout ->
+          assert.isTrue routeCalled
+          assert.equal tokenStored, '/user/1'
+          done()
+        , 0
 
     suite 'invoked by manual url update aka click on link or similar action', ->
       test 'should be ignored', ->
@@ -182,3 +189,35 @@ suite 'este.Router', ->
           assert.equal name, 'href'
           '/user/1'
       assert.isTrue routeCalled
+
+  suite 'route returning promise', ->
+    test 'should change history on promise resolve', (done) ->
+      router.add '/', ->
+        new goog.Promise (resolve, reject) -> setTimeout resolve, 0
+      router.load '/'
+      history.setToken = (path) ->
+        assert.equal path, '/'
+        done()
+
+  # Last click win aka "pending navigations".
+  suite 'previous route', ->
+    createPromiseResolveAfter10ms = ->
+      new goog.Promise (resolve) -> setTimeout resolve, 10
+
+    arrangeLastClickWin = (promise) ->
+      router.add '/', -> promise
+      router.add '/foo', ->
+      router.load '/'
+      router.load '/foo'
+
+    test 'should be cancelled', (done) ->
+      promise = createPromiseResolveAfter10ms()
+      promise.thenCatch -> done()
+      arrangeLastClickWin promise
+
+    test 'should not change history', (done) ->
+      promise = createPromiseResolveAfter10ms()
+      arrangeLastClickWin promise
+      history.setToken = (path) ->
+        assert.equal path, '/foo'
+        done()

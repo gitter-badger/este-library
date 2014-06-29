@@ -2,7 +2,10 @@
   @fileoverview Client-side router.
 
   Features:
-    - Sync/async(todo) routing.
+    - pustState/hashchange
+    - sync/async routing
+    - supports "fast click" via Polymer PointerEvents
+    - browser "last click win" behaviour
 
 ###
 
@@ -52,6 +55,12 @@ class este.Router extends goog.Disposable
   handler_: null
 
   ###*
+    @type {goog.Promise}
+    @private
+  ###
+  previousRoutePromise_: null
+
+  ###*
     @param {(string|este.Route)} route
     @param {Function} callback
     @return {este.Router}
@@ -90,11 +99,13 @@ class este.Router extends goog.Disposable
     @param {string} path
   ###
   load: (path) ->
-    matched = @findMatchedRoute path
-    goog.asserts.assert !!matched, "Route for path '#{path}' not found."
-    matched.callback matched.route.getParams path
-    path = @ensureSlashForHashChange_ path
-    @history_.setToken path
+    matchedRoute = @findMatchedRoute path
+    goog.asserts.assert !!matchedRoute, "Route for path '#{path}' not found."
+    @previousRoutePromise_.cancel() if @previousRoutePromise_
+    routePromise = @getMatchedRoutePromise matchedRoute, path
+    @previousRoutePromise_ = routePromise
+    routePromise
+      .then => @updateUrl_ path
 
   ###*
     @param {(string|este.Route)} route
@@ -122,6 +133,18 @@ class este.Router extends goog.Disposable
       routeCallback.route.match path
 
   ###*
+    @param {este.Router.RouteCallback} route
+    @param {string} path
+    @return {!goog.Promise}
+  ###
+  getMatchedRoutePromise: (route, path) ->
+    params = route.route.getParams path
+    promise = route.callback params
+    if promise instanceof goog.Promise
+      return promise
+    goog.Promise.resolve()
+
+  ###*
     @private
   ###
   registerEvents_: ->
@@ -145,10 +168,18 @@ class este.Router extends goog.Disposable
     @load @ensureSlashForHashChange_ e.target.getAttribute 'href'
 
   ###*
+    @param {string} path
+    @private
+  ###
+  updateUrl_: (path) ->
+    @history_.setToken @ensureSlashForHashChange_ path
+
+  ###*
     Ensure #/ pattern for hashchange. Slash is must for hash to prevent
     accidental focus on element with the same id as url is.
     @param {string} path
     @return {string}
+    @private
   ###
   ensureSlashForHashChange_: (path) ->
     return path if !@history_.hashChangeEnabled || path.charAt(0) == '/'
