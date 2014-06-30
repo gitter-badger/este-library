@@ -15,6 +15,7 @@ goog.require 'este.dom'
 goog.require 'goog.events.BrowserEvent'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.events.EventTarget'
+goog.require 'goog.events.KeyCodes'
 
 class este.events.RoutingClickHandler extends goog.events.EventTarget
 
@@ -52,9 +53,9 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
     @private
   ###
   registerEvents_: ->
-    # Use pointerup where available. Check pointerevents-polyfill.
+    # Use pointerup where available.
     @eventHandler_.listen @element_, 'pointerup', @onElementPointerUp_
-    # Listen click even for pointerup to prevent default anchor action.
+    # Still listen click to be able to prevent browser redirect.
     @eventHandler_.listen @element_, 'click', @onElementClick_
 
   ###*
@@ -62,7 +63,12 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
     @protected
   ###
   onElementPointerUp_: (e) ->
-    @pointerEventsSupported_ = true
+    if !@pointerEventsSupported_
+      # Ignore click events since we can listen pointerup.
+      # Re-enable click via enter on anchors, since clicks are ignored now.
+      @pointerEventsSupported_ = true
+      @eventHandler_.listen @element_, 'keyup', @onElementKeyUp_
+
     anchor = @tryGetRoutingAnchor e
     return if !anchor
     @dispatchClick anchor, e
@@ -81,11 +87,22 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
 
   ###*
     @param {goog.events.BrowserEvent} e
+    @protected
+  ###
+  onElementKeyUp_: (e) ->
+    return if e.keyCode != goog.events.KeyCodes.ENTER
+    anchor = @tryGetRoutingAnchor e, true
+    return if !anchor
+    @dispatchClick anchor, e
+
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @param {boolean=} ignoreIsRoutingEvent
     @return {Element}
     @protected
   ###
-  tryGetRoutingAnchor: (e) ->
-    return null if !este.dom.isRoutingEvent e
+  tryGetRoutingAnchor: (e, ignoreIsRoutingEvent) ->
+    return null if !ignoreIsRoutingEvent && !este.dom.isRoutingEvent e
     anchor = goog.dom.getAncestorByTagNameAndClass e.target, goog.dom.TagName.A
     return null if !anchor || !este.dom.isRoutingAnchor anchor
     anchor
