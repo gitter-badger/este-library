@@ -133,7 +133,7 @@ suite 'este.Router', ->
           assert.isTrue routeCalled
           assert.equal tokenStored, 'user/1'
           done()
-        , 0
+        , 10
 
     suite 'invoked by manual url update aka click on link or similar action', ->
       test 'should be ignored', ->
