@@ -114,8 +114,10 @@ class este.Router extends goog.Disposable
 
     if @previousRoutePromise_
       @previousRoutePromise_.cancel()
+
     routePromise = @getMatchedRoutePromise matchedRoute, path
     @previousRoutePromise_ = routePromise
+
     routePromise
       .then => @updateUrl_ path
       .thenAlways =>
