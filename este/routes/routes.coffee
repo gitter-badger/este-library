@@ -50,8 +50,7 @@ class este.Routes extends goog.events.EventTarget
     @forEachRouteInList (route) =>
       router.add route, (params) =>
         route.params = params
-        @storage.load(route, @).then =>
-          @setActive route
+        @onRouteMatch route
 
   ###*
     @param {Object} app Express.js app.
@@ -60,11 +59,11 @@ class este.Routes extends goog.events.EventTarget
   addToExpress: (app, onRequest) ->
     @forEachRouteInList (route) =>
       expressRoute = app['route'] route.path
+      # TODO(steida): Handle promise error.
       expressRoute['get'] (req, res) =>
         route.params = req['params']
-        @storage.load(route, @).then =>
-          @setActive route
-          onRequest req, res
+        @onRouteMatch route
+          .then -> onRequest req, res
         return
 
   ###*
@@ -79,9 +78,31 @@ class este.Routes extends goog.events.EventTarget
     @param {este.Route} route
     @protected
   ###
-  setActive: (route) ->
+  onRouteMatch: (route) ->
+    @storage.load route, @
+      .then => @trySetActive route
+
+  ###*
+    @param {este.Route} route
+    @protected
+  ###
+  trySetActive: (route) ->
+    previous = @active
     @active = route
-    @dispatchEvent Routes.EventType.CHANGE
+    try
+      # NOTE(steida): Measure performance impact of firing events in Node.js
+      @dispatchEvent Routes.EventType.CHANGE
+    catch e
+      @active = previous
+      throw e
+    return
+
+  ###*
+    @param {este.Route} route
+    @protected
+  ###
+  setActiveAndDispatchEvent: (route) ->
+
 
   ###*
     @param {string} path
