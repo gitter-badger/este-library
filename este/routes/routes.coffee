@@ -98,13 +98,6 @@ class este.Routes extends goog.events.EventTarget
     return
 
   ###*
-    @param {este.Route} route
-    @protected
-  ###
-  setActiveAndDispatchEvent: (route) ->
-
-
-  ###*
     @param {string} path
     @return {este.Route}
     @protected
