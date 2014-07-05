@@ -65,8 +65,10 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
   onElementPointerUp_: (e) ->
     if !@pointerEventsSupported_
       # Ignore click events since we can listen pointerup.
-      # Re-enable click via enter on anchors, since clicks are ignored now.
       @pointerEventsSupported_ = true
+      # By default key enter on focused anchor creates click event.
+      # But with pointer events we are ignoring clicks.
+      # So that's why keyup comes to help.
       @eventHandler_.listen @element_, 'keyup', @onElementKeyUp_
 
     anchor = @tryGetRoutingAnchor e
