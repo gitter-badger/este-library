@@ -10,25 +10,33 @@
 ###
 
 goog.provide 'este.Router'
+goog.provide 'este.Router.EventType'
 
 goog.require 'este.Route'
-goog.require 'goog.Disposable'
 goog.require 'goog.array'
 goog.require 'goog.events.EventHandler'
+goog.require 'goog.events.EventTarget'
 
-class este.Router extends goog.Disposable
+class este.Router extends goog.events.EventTarget
 
   ###*
     @param {este.History} history
     @param {este.events.RoutingClickHandler} routingClickHandler
     @constructor
-    @extends {goog.Disposable}
+    @extends {goog.events.EventTarget}
   ###
   constructor: (history, routingClickHandler) ->
+    super()
     @history_ = history
     @routingClickHandler_ = routingClickHandler
     @routesCallback_ = []
     @handler_ = new goog.events.EventHandler @
+
+  ###*
+    @enum {string}
+  ###
+  @EventType:
+    ERROR: 'error'
 
   ###*
     @type {este.History}
@@ -119,10 +127,18 @@ class este.Router extends goog.Disposable
     @previousRoutePromise_ = routePromise
 
     routePromise
-      .then => @updateUrl_ path
+      .then (value) =>
+        @updateUrl_ path
+      .thenCatch (reason) =>
+        # Because it's not interesting and mainly comes from Router.
+        return if reason instanceof goog.Promise.CancellationError
+        @dispatchEvent
+          type: Router.EventType.ERROR
+          reason: reason
       .thenAlways =>
         if path == @pendingPath_
           @pendingPath_ = ''
+    return
 
   ###*
     @param {(string|este.Route)} route
