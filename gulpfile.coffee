@@ -66,12 +66,14 @@ gulp.task 'build', (done) ->
   runSequence 'transpile', 'js', done
 
 gulp.task 'compile', ->
-  namespaced = este.getProvidedNamespaces './tmp/deps.js', /\['(este\.[^']+)/g
+  namespaces = este.getProvidedNamespaces './tmp/deps.js', /\['(este\.[^']+)/g
   este.compile paths.scripts, 'tmp',
     fileName: 'app.js'
     compilerPath: paths.compiler
     compilerFlags:
-      closure_entry_point: namespaced
+      # NOTE(steida): closure_entry_point ensures that whole este-library is
+      # checked by compiler.
+      closure_entry_point: namespaces
       externs: paths.externs
 
 gulp.task 'test', (done) ->
