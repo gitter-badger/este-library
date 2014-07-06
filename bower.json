@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip",
-    "closure-compiler-externs": "https://github.com/dcodeIO/node.js-closure-compiler-externs.git",
     "closure-library": "https://github.com/google/closure-library.git",
     "normalize-css": "~3.0.1",
     "pointerevents-polyfill": "~0.2.0",
