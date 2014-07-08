@@ -8,6 +8,7 @@ goog.provide 'este.Routes.EventType'
 
 goog.require 'este.Route'
 goog.require 'este.labs.storage.Base'
+goog.require 'goog.Promise'
 goog.require 'goog.events.EventTarget'
 
 class este.Routes extends goog.events.EventTarget
@@ -35,7 +36,7 @@ class este.Routes extends goog.events.EventTarget
     @type {este.labs.storage.Base}
     @protected
   ###
-  storage: new este.labs.storage.Base
+  storage: null
 
   ###*
     @type {Array.<este.Route>}
@@ -79,8 +80,24 @@ class este.Routes extends goog.events.EventTarget
     @protected
   ###
   onRouteMatch: (route) ->
-    @storage.load route, @
-      .then => @trySetActive route
+    maybePromise = @storage?.load route, @
+    if @isPromise maybePromise
+      maybePromise.then =>
+        @trySetActive route
+        return
+    else
+      @trySetActive route
+      goog.Promise.resolve()
+
+  ###*
+    TODO(steida): Move into own place.
+    @return {boolean}
+  ###
+  isPromise: (maybePromise) ->
+    # Detect Closure promise.
+    maybePromise instanceof goog.Promise ||
+    # Detect third-party promise.
+    goog.isFunction maybePromise?['then']
 
   ###*
     @param {este.Route} route

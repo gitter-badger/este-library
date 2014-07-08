@@ -15,7 +15,6 @@ class este.labs.storage.Base extends goog.events.EventTarget
   ###*
     @param {este.Route} route
     @param {este.Routes} routes
-    @return {!goog.Promise}
+    @return {*}
   ###
-  load: (route, routes) ->
-    goog.Promise.resolve()
+  load: goog.abstractMethod
