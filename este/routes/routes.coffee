@@ -1,13 +1,16 @@
 ###*
   @fileoverview Compile-time save app routes. Auto registration for
   este.Router and Express.js app.
+  PATTERN(steida): Is much better to deal with app route represented as
+  instance then as string. Not only code is static safe, but instance also
+  provides convenient methods like redirect or createUrl.
 ###
 
 goog.provide 'este.Routes'
 goog.provide 'este.Routes.EventType'
 
 goog.require 'este.Route'
-goog.require 'este.labs.storage.Base'
+goog.require 'este.labs.Storage'
 goog.require 'goog.Promise'
 goog.require 'goog.events.EventTarget'
 
@@ -33,7 +36,7 @@ class este.Routes extends goog.events.EventTarget
   active: null
 
   ###*
-    @type {este.labs.storage.Base}
+    @type {este.labs.Storage}
     @protected
   ###
   storage: null
