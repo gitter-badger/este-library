@@ -4,6 +4,7 @@ goog.require 'goog.memoize'
 goog.require 'goog.string'
 
 ###*
+  TODO(steida): Consider to port https://github.com/dodo/node-slug.
   @param {string} string
 ###
 este.string.toFancyUrl = (string) ->
