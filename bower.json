@@ -1,6 +1,6 @@
 {
   "name": "este-library",
-  "version": "6.7.0",
+  "version": "6.8.0",
   "private": true,
   "dependencies": {
     "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip",
