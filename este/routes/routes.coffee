@@ -83,24 +83,36 @@ class este.Routes extends goog.events.EventTarget
     @protected
   ###
   onRouteMatch: (route) ->
-    maybePromise = @storage?.load route, @
-    if @isPromise maybePromise
-      maybePromise.then =>
-        @trySetActive route
-        return
-    else
+    promise = @loadFromStorage route
+    if !promise
       @trySetActive route
-      goog.Promise.resolve()
+      return goog.Promise.resolve()
+
+    promise.then =>
+      @trySetActive route
+      return
 
   ###*
-    TODO(steida): Move into own place.
-    @return {boolean}
+    @param {este.Route} route
+    @return {*}
+    @protected
   ###
-  isPromise: (maybePromise) ->
+  loadFromStorage: (route) ->
+    return null if !@storage
+    promise = @storage.load route, @
+    return null if !@isPromise promise
+    promise
+
+  ###*
+    @param {*} promise
+    @return {boolean}
+    @protected
+  ###
+  isPromise: (promise) ->
     # Detect Closure promise.
-    maybePromise instanceof goog.Promise ||
+    promise instanceof goog.Promise ||
     # Detect third-party promise.
-    goog.isFunction maybePromise?['then']
+    goog.isFunction promise?['then']
 
   ###*
     @param {este.Route} route
