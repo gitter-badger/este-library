@@ -166,7 +166,7 @@ suite 'este.Router', ->
           assert.isTrue routeCalled
           assert.equal tokenStored, '/user/1'
           done()
-        , 0
+        , 10
 
     suite 'invoked by manual url update aka click on link or similar action', ->
       test 'should be ignored', ->
@@ -240,7 +240,7 @@ suite 'este.Router', ->
       called = 0
       router.add '/', ->
         called++
-        new goog.Promise (resolve) -> setTimeout resolve, 10
+        new goog.Promise (resolve) -> setTimeout resolve, 50
       router.add '/home', -> goog.Promise.resolve()
       router.load '/home'
       router.load '/'
@@ -249,7 +249,7 @@ suite 'este.Router', ->
         history.setToken = ->
           assert.equal called, 1
           done()
-      , 1
+      , 10
 
     test 'should not be ignored if load is resolved', (done) ->
       called = 0
@@ -259,10 +259,9 @@ suite 'este.Router', ->
       router.load '/'
       setTimeout ->
         router.load '/'
-      , 1
-      history.setToken = ->
         assert.equal called, 2
         done()
+      , 10
 
   suite 'error event', ->
     test 'should be dispatched for rejected promise', (done) ->
