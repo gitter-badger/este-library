@@ -2,6 +2,7 @@ goog.provide 'este.labs.Store'
 goog.provide 'este.labs.Store.Event'
 
 goog.require 'goog.array'
+goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
 
 class este.labs.Store extends goog.events.EventTarget
@@ -46,11 +47,39 @@ class este.labs.Store extends goog.events.EventTarget
       @instanceFromJson constructor, json
 
   ###*
-    PATTERN(steida): Whenever store changes anything, just call notify to
-    dispatch change event.
+    PATTERN(steida): If store has changed, call notify to dispatch change event.
   ###
   notify: ->
     @dispatchEvent new este.labs.Store.Event
+
+  ###*
+    Transform array to object where key is item id.
+    PATTERN(steida): Never use array if you need concurrent access to its items.
+    On the contrary, use array for items without id's, where array is always
+    overriden with new version.
+    https://www.firebase.com/docs/web/guide/saving-data.html#section-push
+    @param {Array} array
+    @return {Object}
+  ###
+  asObject: (array) ->
+    goog.asserts.assertArray array
+    object = {}
+    for item in array
+      goog.asserts.assertString item.id
+      object[item.id] = item
+    object
+
+  ###*
+    Transform object to array.
+    https://www.firebase.com/docs/web/guide/saving-data.html#section-push
+    @param {Object} object
+    @return {Array}
+  ###
+  asArray: (object) ->
+    goog.asserts.assertObject object
+    for key, value of object
+      goog.asserts.assertString value.id
+      value
 
 class este.labs.Store.Event extends goog.events.Event
 
