@@ -50,22 +50,14 @@ class este.labs.Store extends goog.events.EventTarget
     dispatch change event.
   ###
   notify: ->
-    @dispatchEvent new este.labs.Store.Event false
-
-  ###*
-    PATTERN(steida): Whenever store changes anything, just call notify to
-    dispatch change event.
-  ###
-  silentNotify: ->
-    @dispatchEvent new este.labs.Store.Event true
+    @dispatchEvent new este.labs.Store.Event
 
 class este.labs.Store.Event extends goog.events.Event
 
   ###*
-    @param {boolean} silent
     @constructor
     @extends {goog.events.Event}
     @final
   ###
-  constructor: (@silent) ->
+  constructor: ->
     super 'change'
