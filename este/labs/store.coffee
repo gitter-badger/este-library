@@ -32,17 +32,21 @@ class este.labs.Store extends goog.events.EventTarget
   fromJson: goog.abstractMethod
 
   ###*
-    Helper method to create instance filled by json.
+    Helper method to create instance fulfiled with provided json.
     @param {function(new:T)} constructor
     @param {Object=} json
-    @return {T}
+    @return {?} I don't know how to annotate this properly.
     @template T
   ###
   instanceFromJson: (constructor, json) ->
+    # Example for one instance:
+    # @newSong = @instanceFromJson app.songs.Song, songJson
     if arguments.length == 2
       instance = new constructor
       goog.mixin instance, json || {}
       return instance
+    # Example for array map:
+    # @songs = (@asArray(json.songs) || []).map @instanceFromJson app.songs.Song
     (json) =>
       @instanceFromJson constructor, json
 
