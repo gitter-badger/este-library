@@ -51,10 +51,16 @@ class este.labs.Store extends goog.events.EventTarget
       @instanceFromJson constructor, json
 
   ###*
-    PATTERN(steida): If store has changed, call notify to dispatch change event.
+    Call this method after any change you made on store.
   ###
   notify: ->
-    @dispatchEvent new este.labs.Store.Event
+    @dispatchEvent new este.labs.Store.Event false
+
+  ###*
+    Call this method after any change server made on store.
+  ###
+  serverNotify: ->
+    @dispatchEvent new este.labs.Store.Event true
 
   ###*
     Transform array to object where key is item id.
@@ -88,9 +94,10 @@ class este.labs.Store extends goog.events.EventTarget
 class este.labs.Store.Event extends goog.events.Event
 
   ###*
+    @param {boolean} server
     @constructor
     @extends {goog.events.Event}
     @final
   ###
-  constructor: ->
+  constructor: (@server) ->
     super 'change'
