@@ -36,6 +36,11 @@ class este.Routes extends goog.events.EventTarget
   active: null
 
   ###*
+    Storage is optional and super useful. When defined, it allows us to prefetch
+    stores inside storage or do async routing. Matched route calls storage.load
+    method like this: var promise = storage.load(requestedRoute, routes);
+    Active route is set only when storage.load returns resolved promise.
+    Promise can be rejected inside storage or este.Router.
     @type {este.labs.Storage}
     @protected
   ###
@@ -53,8 +58,7 @@ class este.Routes extends goog.events.EventTarget
   addToEste: (router) ->
     @forEachRouteInList (route) =>
       router.add route, (params) =>
-        route.params = params
-        @onRouteMatch route
+        @onRouteMatch route, params
 
   ###*
     @param {Object} app Express.js app.
@@ -65,8 +69,7 @@ class este.Routes extends goog.events.EventTarget
       expressRoute = app['route'] route.path
       # TODO(steida): Handle promise error.
       expressRoute['get'] (req, res) =>
-        route.params = req['params']
-        @onRouteMatch route
+        @onRouteMatch route, req['params']
           .then -> onRequest req, res
         return
 
@@ -79,27 +82,30 @@ class este.Routes extends goog.events.EventTarget
     return
 
   ###*
+    TODO(steida): Add return goog.Promise or promise-like objects.
     @param {este.Route} route
+    @param {Object} params
     @protected
   ###
-  onRouteMatch: (route) ->
-    promise = @loadFromStorage route
+  onRouteMatch: (route, params) ->
+    promise = @loadFromStorage route, params
     if !promise
-      @trySetActive route
+      @trySetActive route, params
       return goog.Promise.resolve()
 
     promise.then =>
-      @trySetActive route
+      @trySetActive route, params
       return
 
   ###*
     @param {este.Route} route
+    @param {Object} params
     @return {*}
     @protected
   ###
-  loadFromStorage: (route) ->
+  loadFromStorage: (route, params) ->
     return null if !@storage
-    promise = @storage.load route, @
+    promise = @storage.load route, params, @
     return null if !@isPromise promise
     promise
 
@@ -116,17 +122,19 @@ class este.Routes extends goog.events.EventTarget
 
   ###*
     @param {este.Route} route
+    @param {Object} params
     @protected
   ###
-  trySetActive: (route) ->
-    previous = @active
+  trySetActive: (route, params) ->
+    # TODO(steida): Reconsider again this try-set-active pattern.
+    # previous = @active
+    route.params = params
     @active = route
-    try
-      # NOTE(steida): Measure performance impact of firing events in Node.js
-      @dispatchEvent Routes.EventType.CHANGE
-    catch e
-      @active = previous
-      throw e
+    # try
+    @dispatchEvent Routes.EventType.CHANGE
+    # catch e
+    #   @active = previous
+    #   throw e
     return
 
   ###*

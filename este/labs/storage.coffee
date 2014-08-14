@@ -14,6 +14,7 @@ class este.labs.Storage extends goog.events.EventTarget
 
   ###*
     @param {este.Route} route
+    @param {Object} params
     @param {este.Routes} routes
     @return {*}
   ###
