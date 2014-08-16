@@ -93,16 +93,16 @@ suite 'este.Route', ->
         params = route.getParams data.url
         assert.deepEqual params, data.params, data.url
 
-  suite 'createUrl', ->
+  suite 'url', ->
     test 'should create url from params', ->
       for data in testData
         route = new Route data.path
-        url = route.createUrl data.params
+        url = route.url data.params
         assert.equal url, data.url, data.url
 
     test 'should not add unused params', ->
       route = new Route '/drug/:name/:condition?/:question?'
-      url = route.createUrl 'name': 'name'
+      url = route.url 'name': 'name'
       assert.equal url, '/drug/name'
 
   suite 'redirect', ->

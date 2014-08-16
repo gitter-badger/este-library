@@ -82,7 +82,7 @@ class este.Route
     @param {(Object|Array)=} params
     @return {string}
   ###
-  createUrl: (params) ->
+  url: (params) ->
     url = if Array.isArray params
       index = 0
       @path.replace /\*/g, -> params[index++]
@@ -98,10 +98,18 @@ class este.Route
 
   ###*
     @param {(Object|Array)=} params
+    @return {string}
+    @deprecated Use url instead.
+  ###
+  createUrl: (params) ->
+    @url params
+
+  ###*
+    @param {(Object|Array)=} params
   ###
   redirect: (params) ->
     goog.asserts.assert !!@router, 'Can\'t redirect. Route was not added to router.'
-    @router.load @createUrl params
+    @router.load @url params
 
   ###*
     @param {string} url
