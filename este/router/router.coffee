@@ -10,7 +10,6 @@
 ###
 
 goog.provide 'este.Router'
-goog.provide 'este.Router.EventType'
 
 goog.require 'este.Route'
 goog.require 'goog.array'
@@ -31,12 +30,6 @@ class este.Router extends goog.events.EventTarget
     @routingClickHandler_ = routingClickHandler
     @routesCallback_ = []
     @handler_ = new goog.events.EventHandler @
-
-  ###*
-    @enum {string}
-  ###
-  @EventType:
-    ERROR: 'error'
 
   ###*
     @type {este.History}
@@ -129,12 +122,7 @@ class este.Router extends goog.events.EventTarget
     routePromise
       .then (value) =>
         @updateUrl_ path
-      .thenCatch (reason) =>
-        # Because it's not interesting and mainly comes from Router.
-        return if reason instanceof goog.Promise.CancellationError
-        @dispatchEvent
-          type: Router.EventType.ERROR
-          reason: reason
+        return
       .thenAlways =>
         if path == @pendingPath_
           @pendingPath_ = ''
