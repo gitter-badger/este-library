@@ -262,22 +262,3 @@ suite 'este.Router', ->
         assert.equal called, 2
         done()
       , 10
-
-  suite 'error event', ->
-    test 'should be dispatched for rejected promise', (done) ->
-      router.listen este.Router.EventType.ERROR, (e) ->
-        assert.equal e.reason, 'foo'
-        done()
-      router.add '/', -> goog.Promise.reject 'foo'
-      router.load '/'
-
-    test 'should not be dispatched for goog.Promise.CancellationError', (done) ->
-      dispatched = false
-      router.listen este.Router.EventType.ERROR, (e) ->
-        dispatched = true
-      router.add '/', -> goog.Promise.reject new goog.Promise.CancellationError
-      router.load '/'
-      setTimeout ->
-        assert.isFalse dispatched
-        done()
-      , 10
