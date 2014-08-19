@@ -9,11 +9,12 @@ goog.require 'goog.asserts'
 class este.Route
 
   ###*
-    @param {string} path Express-style path string like /user/:name
+    @param {string=} path Express-style path string like /user/:name. Can be
+      optional for path-less routes like 404 or 500.
     @constructor
     @final
   ###
-  constructor: (@path) ->
+  constructor: (@path = '') ->
     @keys = []
     @createRegExp_()
 
