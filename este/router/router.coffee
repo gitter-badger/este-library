@@ -5,8 +5,7 @@
     - pustState/hashchange
     - sync/async routing
     - supports "fast click" via Polymer PointerEvents
-    - browser "last click win" behaviour
-
+    - browser "last click win" aka "pedning navigation" feature (goo.gl/dKrhMe)
 ###
 
 goog.provide 'este.Router'
