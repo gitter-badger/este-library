@@ -11,6 +11,7 @@
 goog.provide 'este.Router'
 
 goog.require 'este.Route'
+goog.require 'goog.Promise'
 goog.require 'goog.array'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.events.EventTarget'
@@ -22,6 +23,7 @@ class este.Router extends goog.events.EventTarget
     @param {este.events.RoutingClickHandler} routingClickHandler
     @constructor
     @extends {goog.events.EventTarget}
+    @final
   ###
   constructor: (history, routingClickHandler) ->
     super()
