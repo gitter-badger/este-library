@@ -1,8 +1,8 @@
 goog.provide 'este.labs.Store'
-goog.provide 'este.labs.Store.Event'
 
 goog.require 'goog.array'
 goog.require 'goog.asserts'
+goog.require 'goog.events.Event'
 goog.require 'goog.events.EventTarget'
 
 class este.labs.Store extends goog.events.EventTarget
@@ -52,15 +52,10 @@ class este.labs.Store extends goog.events.EventTarget
 
   ###*
     Call this method after any change you made on store.
+    @param {Object=} target Which object invoked change. By default, it's store.
   ###
-  notify: ->
-    @dispatchEvent new este.labs.Store.Event false
-
-  ###*
-    Call this method after any change server made on store.
-  ###
-  serverNotify: ->
-    @dispatchEvent new este.labs.Store.Event true
+  notify: (target = @) ->
+    @dispatchEvent new goog.events.Event 'change', target
 
   ###*
     Transform array to object where key is item id.
@@ -90,14 +85,3 @@ class este.labs.Store extends goog.events.EventTarget
     for key, value of object
       goog.asserts.assertString value.id
       value
-
-class este.labs.Store.Event extends goog.events.Event
-
-  ###*
-    @param {boolean} server
-    @constructor
-    @extends {goog.events.Event}
-    @final
-  ###
-  constructor: (@server) ->
-    super 'change'
