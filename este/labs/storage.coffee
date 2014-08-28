@@ -1,17 +1,14 @@
 goog.provide 'este.labs.Storage'
 
 goog.require 'goog.Promise'
-goog.require 'goog.events.EventTarget'
 goog.require 'goog.net.HttpStatus'
 
-class este.labs.Storage extends goog.events.EventTarget
+class este.labs.Storage
 
   ###*
     @constructor
-    @extends {goog.events.EventTarget}
   ###
   constructor: ->
-    super()
 
   ###*
     @type {Array.<este.labs.Store>}
@@ -22,7 +19,6 @@ class este.labs.Storage extends goog.events.EventTarget
   ###*
     @param {este.Route} route
     @param {Object} params
-    @param {este.Routes} routes
     @return {!goog.Promise}
   ###
   load: goog.abstractMethod
@@ -37,12 +33,6 @@ class este.labs.Storage extends goog.events.EventTarget
   ###
   deepCopy: (object) ->
     (`/** @type {Object} */`) JSON.parse JSON.stringify object
-
-  ###*
-    @protected
-  ###
-  notify: ->
-    @dispatchEvent 'change'
 
   ###*
     Helper for sync storage load method.
