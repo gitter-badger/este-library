@@ -27,6 +27,7 @@ class este.labs.Storage
     Deep copy object without its functions. JSON.parse JSON.stringify might not
     be the fastest, http://jsperf.com/deep-copy-vs-json-stringify-json-parse,
     but it's robust. For example, Firebase needs it.
+    TODO: Make it obsolete. It was a wrong design decision.
     @param {Object} object
     @return {Object}
     @protected
