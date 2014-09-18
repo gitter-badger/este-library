@@ -8,6 +8,18 @@ goog.require 'goog.events.EventTarget'
 class este.labs.Store extends goog.events.EventTarget
 
   ###*
+    Store holds application state and provides methods to manipulate with it.
+    Store can orchestrate change of one or more app models. Store can even
+    orchestrate other stores. React component read data from store and propagate
+    actions on it. Store itself can update model immediately or use events or
+    Flux dispatcher or even communicating sequential processes. It's up to
+    developer to choose right implementation with only small overengineering.
+    After update it's up to developer to call notify method, which dispatches
+    change events for listening React component. React component should rerender
+    itself when store is changed. Change event can be also used for syncing with
+    server. Stores are initialy fulfiled by client and server storages. The
+    pattern is simple. Storage load method fetches data from source by passed
+    route and params. If successful, concrete store is updated.
     @param {string} name
     @constructor
     @extends {goog.events.EventTarget}
@@ -16,6 +28,7 @@ class este.labs.Store extends goog.events.EventTarget
     super()
 
     ###*
+      Name is used for localStorage persistence for example.
       @const
       @type {string}
     ###
