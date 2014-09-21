@@ -59,7 +59,7 @@ class este.labs.Store extends goog.events.EventTarget
       goog.mixin instance, json || {}
       return instance
     # Example for array map:
-    # @songs = (@asArray(json.songs) || []).map @instanceFromJson app.songs.Song
+    # @songs = json.songs.map @instanceFromJson app.songs.Song
     (json) =>
       @instanceFromJson constructor, json
 
