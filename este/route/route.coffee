@@ -5,6 +5,7 @@
 goog.provide 'este.Route'
 
 goog.require 'goog.asserts'
+goog.require 'goog.uri.utils'
 
 class este.Route
 
@@ -80,10 +81,14 @@ class este.Route
     params
 
   ###*
+    Create route url with fulfilled params and optionally with query data.
     @param {(Object|Array)=} params
+    @param {Object=} queryData An object where keys are URI-encoded parameter
+      keys, and the values are arbitrary types or arrays. Keys with a null value
+      are dropped.
     @return {string}
   ###
-  url: (params) ->
+  url: (params, queryData) ->
     url = if Array.isArray params
       index = 0
       @path.replace /\*/g, -> params[index++]
@@ -95,15 +100,10 @@ class este.Route
         path = path.replace regex, value
       path.replace /\:[^\/]*/g, ''
 
-    @ensureUrlHasNoTrailingSlashOrDot_ url
-
-  ###*
-    @param {(Object|Array)=} params
-    @return {string}
-    @deprecated Use url instead.
-  ###
-  createUrl: (params) ->
-    @url params
+    url = @ensureUrlHasNoTrailingSlashOrDot_ url
+    if queryData
+      url += '?' + goog.uri.utils.buildQueryDataFromMap queryData
+    url
 
   ###*
     @param {(Object|Array)=} params

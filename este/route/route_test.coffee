@@ -105,6 +105,11 @@ suite 'este.Route', ->
       url = route.url 'name': 'name'
       assert.equal url, '/drug/name'
 
+    test 'should append query data as query string', ->
+      route = new Route '/songs/search'
+      url = route.url null, query: 'Johnny Winter'
+      assert.equal url, '/songs/search?query=Johnny%20Winter'
+
   suite 'redirect', ->
     test 'should throw if route was not added to router', ->
       route = new Route '/'
