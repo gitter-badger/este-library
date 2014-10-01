@@ -1,6 +1,5 @@
 goog.provide 'este.string'
 
-goog.require 'goog.memoize'
 goog.require 'goog.string'
 
 ###*
