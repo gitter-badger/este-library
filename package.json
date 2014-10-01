@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "gulp-este": "^1.0.2",
-    "run-sequence": "^0.3.6",
+    "run-sequence": "^1.0.0",
     "yargs": "^1.2.1"
   },
   "scripts": {
