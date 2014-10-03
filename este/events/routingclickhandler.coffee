@@ -84,6 +84,11 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
     return if !anchor
     # Prevent default anchor action (redirection).
     e.preventDefault()
+    # Stop propagation, to prevent React.js: Invariant Violation: ReactMount: Two valid but unequal nodes with the same `data-reactid`:
+    # It seems that React somehow listen events, and sync dispatching confuses
+    # it. Possible workarounds: dispatch in timeout, render in timeout, or
+    # e.stopPropagation(), which seems to be the best.
+    e.stopPropagation()
     return if @pointerEventsSupported_
     @dispatchClick anchor, e
 
