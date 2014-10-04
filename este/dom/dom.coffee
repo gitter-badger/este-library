@@ -209,7 +209,6 @@ este.dom.isRoutingEvent = (e) ->
   # Client side routing should ignore all these actions.
   return false if e.ctrlKey || e.altKey || e.shiftKey || e.metaKey
   # Ignore default prevented.
-  # NOTE: Does not work with emulated pointer events from Polymer.
   return false if e.getBrowserEvent().defaultPrevented
   true
 
