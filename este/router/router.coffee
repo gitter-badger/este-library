@@ -107,8 +107,7 @@ class este.Router extends goog.events.EventTarget
     @param {string} path
   ###
   load: (path) ->
-    if @pendingPath_ && @pendingPath_ == path
-      return
+    return if @pendingPath_ && @pendingPath_ == path
     @pendingPath_ = path
 
     matchedRoute = @findMatchedRoute path
