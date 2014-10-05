@@ -1,25 +1,18 @@
-###*
-  @fileoverview Click handler for client side routing.
-
-  - Handle only relevant anchors, see este.dom.isRoutingClick.
-  - Support fast click on touch devices.
-    - When available, it uses pointerup event. Use this polyfill:
-        http://www.polymer-project.org/platform/pointer-events.html
-    - Another trick: https://plus.google.com/u/0/+RickByers/posts/ej7nsuoaaDa
-      But this one does not work with iOS. Also, sometimes zoom is required.
-
-###
 goog.provide 'este.events.RoutingClickHandler'
 
 goog.require 'este.dom'
 goog.require 'goog.events.BrowserEvent'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.events.EventTarget'
-goog.require 'goog.events.KeyCodes'
 
 class este.events.RoutingClickHandler extends goog.events.EventTarget
 
   ###*
+    Click handler for client side routing. It handles only relevant anchors,
+    check este.dom.isRoutingEvent. For fast click, check:
+    https://plus.google.com/u/0/+RickByers/posts/ej7nsuoaaDa
+    For iOS or pages where double tap for zoom is required, you have to use
+    library like polymer-gestures and onCustomClick method.
     @param {Element=} element
     @constructor
     @extends {goog.events.EventTarget}
@@ -44,36 +37,34 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
   eventHandler_: null
 
   ###*
-    @type {boolean}
-    @private
-  ###
-  pointerEventsSupported_: false
-
-  ###*
     @private
   ###
   registerEvents_: ->
-    # Use pointerup where available.
-    @eventHandler_.listen @element_, 'pointerup', @onElementPointerUp_
-    # Still listen click to be able to prevent browser redirect.
+    # Click must be always listened to preventDefault redirection.
     @eventHandler_.listen @element_, 'click', @onElementClick_
 
   ###*
-    @param {goog.events.BrowserEvent} e
-    @protected
+    Hook for polymer-gestures or similar "fast click" library.
+    @param {Event} e
   ###
-  onElementPointerUp_: (e) ->
-    if !@pointerEventsSupported_
-      # Ignore click events since we can listen pointerup.
-      @pointerEventsSupported_ = true
-      # By default key enter on focused anchor creates click event.
-      # But with pointer events we are ignoring clicks.
-      # So that's why keyup comes to help.
-      @eventHandler_.listen @element_, 'keyup', @onElementKeyUp_
-
-    anchor = @tryGetRoutingAnchor e
+  onCustomClick: (e) ->
+    googEvent = @googEventFrom e
+    anchor = @tryGetRoutingAnchor googEvent
     return if !anchor
-    @dispatchClick anchor, e
+    # Note element click is still handled to prevent click redirection.
+    # No, click isn't dispatched twice, just once, if polymer-gestures are used.
+    @dispatchClick anchor
+
+  ###*
+    @param {Event} e
+  ###
+  googEventFrom: (e) ->
+    googEvent = new goog.events.BrowserEvent e
+    # Ensure type it's click, can override tap for example.
+    googEvent.type = 'click'
+    # Ensure it's mouse button.
+    googEvent.isMouseActionButton = -> true
+    googEvent
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -82,48 +73,33 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
   onElementClick_: (e) ->
     anchor = @tryGetRoutingAnchor e
     return if !anchor
-    # Prevent default anchor action (redirection).
+    # Prevent anchor redirection because changing url is router responsibility.
     e.preventDefault()
-    # Stop propagation, to prevent React.js: Invariant Violation: ReactMount: Two valid but unequal nodes with the same `data-reactid`:
-    # It seems that React somehow listen events, and sync dispatching confuses
-    # it. Possible workarounds: dispatch in timeout, render in timeout, or
-    # e.stopPropagation(), which seems to be the best.
+    # It seems sync dispatching/rendering confuses React somehow with error:
+    # Invariant Violation: ReactMount: Two valid but unequal nodes with the same `data-reactid`:
+    # e.stopPropagation() fixed it.
     e.stopPropagation()
-    return if @pointerEventsSupported_
-    @dispatchClick anchor, e
+    @dispatchClick anchor
 
   ###*
     @param {goog.events.BrowserEvent} e
-    @protected
-  ###
-  onElementKeyUp_: (e) ->
-    return if e.keyCode != goog.events.KeyCodes.ENTER
-    anchor = @tryGetRoutingAnchor e, true
-    return if !anchor
-    @dispatchClick anchor, e
-
-  ###*
-    @param {goog.events.BrowserEvent} e
-    @param {boolean=} ignoreIsRoutingEvent
     @return {Element}
     @protected
   ###
-  tryGetRoutingAnchor: (e, ignoreIsRoutingEvent) ->
-    return null if !ignoreIsRoutingEvent && !este.dom.isRoutingEvent e
+  tryGetRoutingAnchor: (e) ->
+    return null if !este.dom.isRoutingEvent e
     anchor = goog.dom.getAncestorByTagNameAndClass e.target, goog.dom.TagName.A
     return null if !anchor || !este.dom.isRoutingAnchor anchor
     anchor
 
   ###*
     @param {Element} anchor
-    @param {goog.events.BrowserEvent} e
     @protected
   ###
-  dispatchClick: (anchor, e) ->
-    clickEvent = new goog.events.BrowserEvent e.getBrowserEvent()
-    clickEvent.target = anchor
-    clickEvent.type = goog.events.EventType.CLICK
-    @dispatchEvent clickEvent
+  dispatchClick: (anchor) ->
+    @dispatchEvent
+      type: goog.events.EventType.CLICK
+      target: anchor
 
   ###*
     @override
