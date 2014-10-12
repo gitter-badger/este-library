@@ -75,6 +75,7 @@ gulp.task 'compile', ->
       # checked by compiler.
       closure_entry_point: namespaces
       externs: paths.externs
+      language_in: 'ECMASCRIPT5'
 
 gulp.task 'test', (done) ->
   runSequence 'build', 'compile', done
