@@ -7,6 +7,7 @@ class este.labs.Storage
 
   ###*
     @constructor
+    @deprecated
   ###
   constructor: ->
 
