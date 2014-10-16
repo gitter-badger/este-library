@@ -133,8 +133,6 @@ class este.Dispatcher
         @resolves_[id] payload
       .thenCatch (reason) =>
         @onError action, reason
-        if @errorReporter
-          @errorReporter.report reason, action
         @rejects_[id] reason
 
   ###*
