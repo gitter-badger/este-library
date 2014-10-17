@@ -49,9 +49,12 @@ suite 'este.Dispatcher', ->
           assert.deepEqual value, [a: 1]
           done()
 
+  suite 'onError', ->
     test 'should catch error in callback', (done) ->
       called = false
-      dispatcher.onError = -> called = true
+      dispatcher.onError = ->
+        called = true
+        # TODO: Test onError throwing error.
       dispatcher.register (action, payload) ->
         throw 'error'
       dispatcher

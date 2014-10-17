@@ -70,7 +70,8 @@ class este.Dispatcher
     delete @callbacks_[id]
 
   ###*
-    For error reporting.
+    For error reporting. For usage example, check:
+    github.com/steida/songary/blob/master/app/client/js/errorreporter.coffee
     @param {string} action
     @param {*} reason
   ###
@@ -122,18 +123,18 @@ class este.Dispatcher
   ###
   runCallbacks_: (action, payload) ->
     @callbacks_.forEach (callback, id) =>
-      # New promise to handle:
+      # New promise, because we need to handle:
       #   1) sync callback returning something or nothing
       #   2) sync callback throwing error
-      #   3) async callback returing promise
+      #   3) async callback returning promise
       new goog.Promise (resolve, reject) =>
         @pendingId_ = id
         resolve callback action, payload
       .then (value) =>
         @resolves_[id] payload
       .thenCatch (reason) =>
-        @onError action, reason
         @rejects_[id] reason
+        @onError action, reason
 
   ###*
     @param {Array.<number>} ids Register callbacks IDs.
