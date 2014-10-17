@@ -1,25 +1,23 @@
-goog.provide 'este.labs.Storage'
+goog.provide 'este.Storage'
 
 goog.require 'goog.Promise'
 goog.require 'goog.net.HttpStatus'
 
-class este.labs.Storage
+class este.Storage
 
   ###*
+    For isomorphic apps, storage is responsible for store data persistence.
     @constructor
-    @deprecated
   ###
   constructor: ->
 
   ###*
-    Helper for sync storage load method.
     @protected
   ###
   ok: ->
     goog.Promise.resolve goog.net.HttpStatus.OK
 
   ###*
-    Helper for sync storage load method.
     @protected
   ###
   notFound: ->

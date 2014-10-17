@@ -1,6 +1,6 @@
-suite 'este.labs.Store', ->
+suite 'este.Store', ->
 
-  Store = este.labs.Store
+  Store = este.Store
   store = null
 
   setup ->

@@ -1,11 +1,9 @@
-goog.provide 'este.labs.Store'
+goog.provide 'este.Store'
 
-goog.require 'goog.array'
-goog.require 'goog.asserts'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.EventTarget'
 
-class este.labs.Store extends goog.events.EventTarget
+class este.Store extends goog.events.EventTarget
 
   ###*
     Store holds app state and methods to manipulate with it. Store represents
