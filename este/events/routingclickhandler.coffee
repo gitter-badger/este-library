@@ -25,6 +25,12 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
     @registerEvents_()
 
   ###*
+    Set this attribute to true on anchor which uses custom click.
+    @type {string}
+  ###
+  dataCustomClick: 'data-este-custom-click'
+
+  ###*
     @type {Element}
     @private
   ###
@@ -51,9 +57,14 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
     googEvent = @googEventFrom e
     anchor = @tryGetRoutingAnchor googEvent
     return if !anchor
-    # Note element click is still handled to prevent click redirection.
-    # No, click isn't dispatched twice, just once, if polymer-gestures are used.
     @dispatchClick anchor
+
+  ###*
+    Mark element with data attribute to prevent double dispatching.
+    @param {Element} element
+  ###
+  enableCustomClick: (element) ->
+    element.setAttribute @dataCustomClick, 'true'
 
   ###*
     @param {Event} e
@@ -73,12 +84,13 @@ class este.events.RoutingClickHandler extends goog.events.EventTarget
   onElementClick_: (e) ->
     anchor = @tryGetRoutingAnchor e
     return if !anchor
-    # Prevent anchor redirection because changing url is router responsibility.
+    # Always prevent redirection because changing url is router responsibility.
     e.preventDefault()
     # It seems sync dispatching/rendering confuses React somehow with error:
     # Invariant Violation: ReactMount: Two valid but unequal nodes with the same `data-reactid`:
-    # e.stopPropagation() fixed it.
+    # e.stopPropagation() fixes it.
     e.stopPropagation()
+    return if anchor.hasAttribute @dataCustomClick
     @dispatchClick anchor
 
   ###*
