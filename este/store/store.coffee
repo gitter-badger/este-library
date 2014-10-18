@@ -31,7 +31,7 @@ class este.Store extends goog.events.EventTarget
   name: ''
 
   ###*
-    Override this method to return props used for serialization.
+    Override this method to return only that props which should be serialized.
     @return {Object}
   ###
   toJson: goog.abstractMethod
