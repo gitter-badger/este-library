@@ -95,7 +95,7 @@ class este.Dispatcher
     goog.asserts.assert !@isDispatching_,
       'Cannot dispatch in the middle of a dispatch.'
     goog.asserts.assertString action
-    goog.asserts.assertObject payload
+    goog.asserts.assertObject payload if payload
 
     @isDispatching_ = true
     @resolves_ = []

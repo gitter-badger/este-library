@@ -49,6 +49,11 @@ suite 'este.Dispatcher', ->
           assert.deepEqual value, [a: 1]
           done()
 
+    test 'should allow undefined payload', (done) ->
+      dispatcher.register (action, payload) ->
+        done()
+      dispatcher.dispatch 'action'
+
   suite 'onError', ->
     test 'should catch error in callback', (done) ->
       called = false
