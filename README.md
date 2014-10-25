@@ -1,4 +1,5 @@
 # este-library [![Build Status](https://secure.travis-ci.org/steida/este-library.png?branch=master)](http://travis-ci.org/steida/este-library) [![devDependency Status](https://david-dm.org/steida/este-library/dev-status.png)](https://david-dm.org/steida/este-library#info=devDependencies)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/steida/este-library?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Library for [Este](https://github.com/steida/este) dev stack.
 
